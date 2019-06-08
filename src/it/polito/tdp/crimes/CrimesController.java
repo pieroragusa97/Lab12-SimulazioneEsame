@@ -7,6 +7,7 @@ package it.polito.tdp.crimes;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.model.Distretto;
 import it.polito.tdp.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,7 +18,7 @@ import javafx.scene.control.TextField;
 
 public class CrimesController {
 
-	private Model model;
+	private Model model=new Model();
 	
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -26,13 +27,13 @@ public class CrimesController {
     private URL location;
 
     @FXML // fx:id="boxAnno"
-    private ComboBox<?> boxAnno; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxMese"
-    private ComboBox<?> boxMese; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxGiorno"
-    private ComboBox<?> boxGiorno; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxGiorno; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnCreaReteCittadina"
     private Button btnCreaReteCittadina; // Value injected by FXMLLoader
@@ -48,7 +49,22 @@ public class CrimesController {
 
     @FXML
     void doCreaReteCittadina(ActionEvent event) {
-    	
+    	if(btnCreaReteCittadina.isArmed()) {
+    		if(boxAnno.getValue()==null)
+    			txtResult.appendText("scegli numero" +"\n");
+    		else {
+    			model.creaGrafo(boxAnno.getValue());
+    			for(Distretto d:model.getGrafo().vertexSet()) {
+    				txtResult.appendText("distretto considerato:  "+d.getIdDistretto()+"\n");
+    				for(Distretto dapassare:model.distretti_adiacenti(d).values()) {
+    					txtResult.appendText(dapassare.getIdDistretto()+" ;");
+    				}
+    				txtResult.appendText("\n");
+    			}
+    		   
+    		
+    	}
+    	}
     }
 
     @FXML
@@ -65,7 +81,7 @@ public class CrimesController {
         assert btnSimula != null : "fx:id=\"btnSimula\" was not injected: check your FXML file 'Crimes.fxml'.";
         assert txtN != null : "fx:id=\"txtN\" was not injected: check your FXML file 'Crimes.fxml'.";
         assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'Crimes.fxml'.";
-
+        boxAnno.getItems().addAll(model.getAnni());
     }
     
     public void setModel(Model model) {
